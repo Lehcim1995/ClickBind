@@ -112,7 +112,9 @@ namespace RuneScapeBetterClickker
         {
             if (!cb_Binds.Checked) return;
             if (keyEventArgs.KeyCode != specialClickBind || !bindSpecialClickBind) return;
+            vu.PressKey(Keys.ShiftKey);
             vu.ClickLeftMouse(); //TODO voeg de shift code toe
+            vu.ReleaseKey(Keys.ShiftKey);
             keyEventArgs.Handled = true;
         }
 

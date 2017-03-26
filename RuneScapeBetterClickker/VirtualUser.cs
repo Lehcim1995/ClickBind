@@ -10,6 +10,12 @@ using System.Windows.Forms;
 
 namespace Click
 {
+    struct ClickPoints
+    {
+        public Point point;
+        public float Time;
+    }
+
     public class VirtualUser
     {
         private const uint MOUSEEVENTF_LEFTDOWN = 0x02;
@@ -21,6 +27,7 @@ namespace Click
         private const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
 
         private List<Point> points;
+        private List<ClickPoints> clickPoints;
         private readonly Random r = new Random();
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
@@ -32,20 +39,28 @@ namespace Click
         public int GetAlmountPoints()
         {
             return points?.Count ?? 0;
+            //return clickPoints?.Count ?? 0; //TODO haal de oude points weg
         }
         
         public void RemoveSeries()
         {
             points = new List<Point>();
+            clickPoints?.Clear();
         }
 
         public void AddPointToSeries(Point p)
         {
+            if (clickPoints == null)
+            {
+                clickPoints = new List<ClickPoints>();
+            }
+
             if (points == null)
             {
                 points = new List<Point>();
             }
 
+            clickPoints?.Add(new ClickPoints() {point = p}); //TODO voeg de tijd toe, deze is relatief aan de laatste click voor deze click
             points?.Add(p);
         }
 
