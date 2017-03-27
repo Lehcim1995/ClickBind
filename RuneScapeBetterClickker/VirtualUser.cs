@@ -77,6 +77,7 @@ namespace Click
         public void ExecuteSeries(ref bool isPlaying)
         {
             isPlaying = true;
+            Point p = Cursor.Position;
             foreach (Point point in points)
             {
                 ClickLeftMouse(point.X, point.Y);
@@ -84,6 +85,7 @@ namespace Click
                 Thread.Sleep(sleep);
             }
             isPlaying = false;
+            Cursor.Position = p;
         }
 
         public void ClickLeftMouse()
