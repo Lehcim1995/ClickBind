@@ -98,7 +98,7 @@ namespace RuneScapeBetterClickker
         private void RecordingMouseActivity(object sender, MouseEventArgs mouseEventArgs)
         {
             if (!recordingClicks) return;
-            vu.AddPointToSeries(mouseEventArgs.Location);
+            vu.AddPointToSeries(Cursor.Position);
             lbl_CLicks.Text = vu.GetAlmountPoints().ToString();
         }
 
