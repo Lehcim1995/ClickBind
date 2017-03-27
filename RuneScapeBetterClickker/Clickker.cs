@@ -81,6 +81,7 @@ namespace RuneScapeBetterClickker
         private void SupressMouseWhilePlaying(object sender, MouseEventExtArgs mouseEventExtArgs)
         {
             mouseEventExtArgs.Handled = playingRecording;
+            //TODO add label text update
         }
 
         private void StopRecording(object sender, KeyEventArgs keyEventArgs)
@@ -92,7 +93,9 @@ namespace RuneScapeBetterClickker
 
         private void RecordKey(object sender, KeyEventArgs keyEventArgs)
         {
+            if (!recordingClicks) return;
             vu.AddKeyToSeries(keyEventArgs.KeyCode);
+            lbl_CLicks.Text = vu.GetAlmountPoints().ToString();
         }
 
         private void StartClickRecording(object sender, KeyEventArgs keyEventArgs)
@@ -100,6 +103,7 @@ namespace RuneScapeBetterClickker
             if (keyEventArgs.KeyCode != playClickRecording) return;
             if (vu.GetAlmountPoints() == 0) return;
             vu.ExecuteSeries(ref playingRecording);
+            keyEventArgs.Handled = true;
         }
 
         private void RecordingMouseActivity(object sender, MouseEventArgs mouseEventArgs)

@@ -14,7 +14,7 @@ namespace Click
     {
         public Point point;
         public float Time;
-        public Keys Key;
+        public Keys Key;// = Keys.None;
     }
 
     public class VirtualUser
@@ -39,8 +39,8 @@ namespace Click
 
         public int GetAlmountPoints()
         {
-            return points?.Count ?? 0;
-            //return clickPoints?.Count ?? 0; //TODO haal de oude points weg
+            //return points?.Count ?? 0;
+            return clickPoints?.Count ?? 0; //TODO haal de oude points weg
         }
         
         public void RemoveSeries()
@@ -97,11 +97,11 @@ namespace Click
             }*/
             foreach(ClickPoints cp in clickPoints)
             {
-                if(cp.Key != null)
+                if(cp.Key != Keys.None)
                 {
                     PressKey(cp.Key);
                 }
-                if (cp.point != null)
+                if (cp.point != Point.Empty)
                 {
                     ClickLeftMouse(cp.point.X, cp.point.Y);
                 }
