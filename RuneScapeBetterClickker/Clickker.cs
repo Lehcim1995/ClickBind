@@ -68,12 +68,14 @@ namespace RuneScapeBetterClickker
             m_Events.KeyDown += SpecialCickBindPress;
             m_Events.KeyDown += StartClickRecording;
             m_Events.KeyDown += StopRecording;
+            m_Events.KeyDown += RecordKey;
 
             m_Events.MouseDownExt += FastClickReg;
             m_Events.MouseUpExt += FastClickUp;
             m_Events.MouseUpExt += SupressKeyResign;
             m_Events.MouseClick += RecordingMouseActivity;
             m_Events.MouseMoveExt += SupressMouseWhilePlaying;
+            
         }
 
         private void SupressMouseWhilePlaying(object sender, MouseEventExtArgs mouseEventExtArgs)
@@ -86,6 +88,11 @@ namespace RuneScapeBetterClickker
             if (keyEventArgs.KeyCode != stopRecording) return;
             recordingClicks = false;
             keyEventArgs.Handled = true;
+        }
+
+        private void RecordKey(object sender, KeyEventArgs keyEventArgs)
+        {
+            vu.AddKeyToSeries(keyEventArgs.KeyCode);
         }
 
         private void StartClickRecording(object sender, KeyEventArgs keyEventArgs)

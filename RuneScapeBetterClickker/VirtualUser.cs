@@ -14,6 +14,7 @@ namespace Click
     {
         public Point point;
         public float Time;
+        public Keys Key;
     }
 
     public class VirtualUser
@@ -64,10 +65,20 @@ namespace Click
             points?.Add(p);
         }
 
+        public void AddKeyToSeries(Keys key)
+        {
+            if(clickPoints == null)
+            {
+                clickPoints = new List<ClickPoints>();
+            }
+            clickPoints?.Add(new ClickPoints() { Key = key});
+        }
+
         public void ExecuteSeries()
         {
             foreach (Point point in points)
             {
+
                 ClickLeftMouse(point.X, point.Y);
                 int sleep = 100 - r.Next(20);
                 Thread.Sleep(sleep);
@@ -78,9 +89,22 @@ namespace Click
         {
             isPlaying = true;
             Point p = Cursor.Position;
-            foreach (Point point in points)
+            /*foreach (Point point in points)
             {
                 ClickLeftMouse(point.X, point.Y);
+                int sleep = 100 - r.Next(20);
+                Thread.Sleep(sleep);
+            }*/
+            foreach(ClickPoints cp in clickPoints)
+            {
+                if(cp.Key != null)
+                {
+                    PressKey(cp.Key);
+                }
+                if (cp.point != null)
+                {
+                    ClickLeftMouse(cp.point.X, cp.point.Y);
+                }
                 int sleep = 100 - r.Next(20);
                 Thread.Sleep(sleep);
             }
