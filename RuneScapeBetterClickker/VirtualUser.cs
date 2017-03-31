@@ -7,14 +7,20 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace Click
 {
     struct ClickPoints
     {
-        public Point point;
+        public Point Point;
         public float Time;
         public Keys Key;// = Keys.None;
+
+        public override string ToString()
+        {
+            return $"Point {Point} Or Key {Key} At {Time}";
+        }
     }
 
     public class VirtualUser
@@ -32,10 +38,12 @@ namespace Click
         private readonly Random r = new Random();
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        private static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo);
+        private static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo); 
+        //TODO mouse_event is depricated gebruik SendInput
 
         [DllImport("user32.dll")]
         private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
+        //TODO gebruik SendInput
 
         public int GetAlmountPoints()
         {
@@ -61,7 +69,7 @@ namespace Click
                 points = new List<Point>();
             }
 
-            clickPoints?.Add(new ClickPoints() {point = p}); //TODO voeg de tijd toe, deze is relatief aan de laatste click voor deze click
+            clickPoints?.Add(new ClickPoints() {Point = p, Time = DateTime.Now.ToFileTimeUtc()}); //TODO voeg de tijd toe, deze is relatief aan de laatste click voor deze click
             points?.Add(p);
         }
 
@@ -71,7 +79,7 @@ namespace Click
             {
                 clickPoints = new List<ClickPoints>();
             }
-            clickPoints?.Add(new ClickPoints() { Key = key});
+            clickPoints?.Add(new ClickPoints() { Key = key,  Time = DateTime.Now.ToFileTimeUtc() });
         }
 
         public void ExecuteSeries()
@@ -101,11 +109,12 @@ namespace Click
                 {
                     PressKey(cp.Key);
                 }
-                if (cp.point != Point.Empty)
+                if (cp.Point != Point.Empty)
                 {
-                    ClickLeftMouse(cp.point.X, cp.point.Y);
+                    ClickLeftMouse(cp.Point.X, cp.Point.Y);
                 }
                 int sleep = 100 - r.Next(20);
+                Console.WriteLine(cp.ToString());
                 Thread.Sleep(sleep);
             }
             isPlaying = false;
@@ -122,7 +131,7 @@ namespace Click
         public void ClickLeftMouse(int x, int y)
         {
             Cursor.Position = new Point(x, y);
-            ClickLeftMouse();
+            mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, (uint)x, (uint)y, 0, 0);
         }
 
         public void PressKey(Keys key)

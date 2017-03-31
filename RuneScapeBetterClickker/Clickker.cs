@@ -77,7 +77,7 @@ namespace RuneScapeBetterClickker
             m_Events.MouseUpExt += SupressKeyResign;
             m_Events.MouseClick += RecordingMouseActivity;
             m_Events.MouseMoveExt += SupressMouseWhilePlaying;
-            
+
         }
 
         private void ClickBindKeyRelease(object sender, KeyEventArgs keyEventArgs)
@@ -92,7 +92,6 @@ namespace RuneScapeBetterClickker
         private void SupressMouseWhilePlaying(object sender, MouseEventExtArgs mouseEventExtArgs)
         {
             mouseEventExtArgs.Handled = playingRecording;
-            //TODO add label text update
         }
 
         private void StopRecording(object sender, KeyEventArgs keyEventArgs)
