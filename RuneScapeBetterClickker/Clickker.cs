@@ -23,6 +23,7 @@ namespace RuneScapeBetterClickker
         private Keys fastClickButton;
 
         private Keys clickBind;
+        private bool clickBindClickOnce;
         private bool bindClickBind;
         private Keys specialClickBind;
         private bool bindSpecialClickBind;
@@ -65,6 +66,7 @@ namespace RuneScapeBetterClickker
             m_Events.KeyDown += RegisterFastClickButton;
             m_Events.KeyDown += CheckFastKey;
             m_Events.KeyDown += ClickBindKeyPress;
+            m_Events.KeyUp += ClickBindKeyRelease;
             m_Events.KeyDown += SpecialCickBindPress;
             m_Events.KeyDown += StartClickRecording;
             m_Events.KeyDown += StopRecording;
@@ -78,6 +80,15 @@ namespace RuneScapeBetterClickker
             
         }
 
+        private void ClickBindKeyRelease(object sender, KeyEventArgs keyEventArgs)
+        {
+            if (!clickBindClickOnce) return;
+            if (!cb_Binds.Checked) return;
+            if (keyEventArgs.KeyCode != clickBind || bindClickBind) return;
+            clickBindClickOnce = false;
+            //Mischien moet ik dit wel handelen maar weet niet zeker
+        }
+
         private void SupressMouseWhilePlaying(object sender, MouseEventExtArgs mouseEventExtArgs)
         {
             mouseEventExtArgs.Handled = playingRecording;
@@ -86,6 +97,7 @@ namespace RuneScapeBetterClickker
 
         private void StopRecording(object sender, KeyEventArgs keyEventArgs)
         {
+            if (!recordingClicks) return;
             if (keyEventArgs.KeyCode != stopRecording) return;
             recordingClicks = false;
             keyEventArgs.Handled = true;
@@ -131,9 +143,11 @@ namespace RuneScapeBetterClickker
 
         private void ClickBindKeyPress(object sender, KeyEventArgs keyEventArgs)
         {
+            if (clickBindClickOnce) return;
             if (!cb_Binds.Checked) return;
             if (keyEventArgs.KeyCode != clickBind || bindClickBind) return;
             vu.ClickLeftMouse();
+            clickBindClickOnce = true;
             keyEventArgs.Handled = true;
         }
 
@@ -201,12 +215,15 @@ namespace RuneScapeBetterClickker
         {
             if (m_Events == null) return;
 
+//            /m_Events.KeyDown = (EventHandler)Delegate.RemoveAll(m_Events.KeyDown as Delegate, m_Events.KeyDown);
+
             m_Events.KeyDown -= RegisterFastClickButton;
             m_Events.KeyDown -= CheckFastKey;
             m_Events.KeyDown -= ClickBindKeyPress;
             m_Events.KeyDown -= SpecialCickBindPress;
             m_Events.KeyDown -= StartClickRecording;
             m_Events.KeyDown -= StopRecording;
+            m_Events.KeyDown -= RecordKey;
 
             m_Events.MouseDownExt -= FastClickReg;
             m_Events.MouseUpExt -= FastClickUp;
