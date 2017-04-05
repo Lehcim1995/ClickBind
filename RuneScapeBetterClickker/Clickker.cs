@@ -91,7 +91,7 @@ namespace RuneScapeBetterClickker
 
         private void SupressMouseWhilePlaying(object sender, MouseEventExtArgs mouseEventExtArgs)
         {
-            mouseEventExtArgs.Handled = playingRecording;
+            //mouseEventExtArgs.Handled = playingRecording;
         }
 
         private void StopRecording(object sender, KeyEventArgs keyEventArgs)
@@ -114,7 +114,7 @@ namespace RuneScapeBetterClickker
             if (keyEventArgs.KeyCode != playClickRecording) return;
             if (vu.GetAlmountPoints() == 0) return;
             vu.ExecuteSeries(ref playingRecording);
-            keyEventArgs.Handled = true;
+            //keyEventArgs.Handled = true;
         }
 
         private void RecordingMouseActivity(object sender, MouseEventArgs mouseEventArgs)
@@ -142,12 +142,12 @@ namespace RuneScapeBetterClickker
 
         private void ClickBindKeyPress(object sender, KeyEventArgs keyEventArgs)
         {
+            if (keyEventArgs.KeyCode != clickBind || bindClickBind) return;
+            keyEventArgs.Handled = true;
             if (clickBindClickOnce) return;
             if (!cb_Binds.Checked) return;
-            if (keyEventArgs.KeyCode != clickBind || bindClickBind) return;
             vu.ClickLeftMouse();
             clickBindClickOnce = true;
-            keyEventArgs.Handled = true;
         }
 
         private void FastClickUp(object sender, MouseEventExtArgs mouseEventExtArgs)

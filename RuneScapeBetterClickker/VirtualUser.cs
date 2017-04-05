@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using Timer = System.Threading.Timer;
 
 namespace Click
 {
@@ -982,6 +983,12 @@ namespace Click
 
     public class VirtualUser
     {
+        enum SystemMetric
+        {
+            SM_CXSCREEN = 0,
+            SM_CYSCREEN = 1,
+        }
+
         private const uint MOUSEEVENTF_LEFTDOWN = 0x02;
         private const uint MOUSEEVENTF_LEFTUP = 0x04;
         private const uint MOUSEEVENTF_RIGHTDOWN = 0x08;
@@ -1003,7 +1010,13 @@ namespace Click
         //TODO gebruik SendInput
 
         [DllImport("user32.dll")]
-        internal static extern uint SendInput(uint nInputs, [MarshalAs(UnmanagedType.LPArray), In] INPUT[] pInputs, int cbSize);
+        internal static extern uint SendInput(uint nInputs, [MarshalAs(UnmanagedType.LPArray), In] ref INPUT pInputs, int cbSize);
+
+        [DllImport("user32.dll")]
+        static extern bool SetCursorPos(int X, int Y);
+
+        [DllImport("user32.dll")]
+        static extern int GetSystemMetrics(SystemMetric smIndex);
 
         public int GetAlmountPoints()
         {
@@ -1053,6 +1066,7 @@ namespace Click
             }
         }
 
+        // ReSharper disable once RedundantAssignment
         public void ExecuteSeries(ref bool isPlaying)
         {
             isPlaying = true;
@@ -1065,6 +1079,11 @@ namespace Click
             }*/
             foreach(ClickPoints cp in clickPoints)
             {
+                if (!isPlaying)
+                {
+                    break;
+                }
+
                 if(cp.Key != Keys.None)
                 {
                     PressKey(cp.Key);
@@ -1081,17 +1100,34 @@ namespace Click
             Cursor.Position = p;
         }
 
+        public void NewClickLeftMouse(int x, int y)
+        {
+            //SetCursorPos(x, y);
+
+            INPUT structInput = new INPUT {type = InputType.MOUSE};
+            structInput.U.mi.dwFlags = MOUSEEVENTF.MOVE | MOUSEEVENTF.ABSOLUTE;
+            structInput.U.mi.dx = (x * 65536) / GetSystemMetrics(SystemMetric.SM_CXSCREEN);
+            structInput.U.mi.dy =  (y * 65536) / GetSystemMetrics(SystemMetric.SM_CYSCREEN);
+            SendInput(1, ref structInput, Marshal.SizeOf(structInput));
+
+            structInput.U.mi.dwFlags = MOUSEEVENTF.LEFTDOWN;
+            SendInput(1, ref structInput, Marshal.SizeOf(structInput));
+
+            structInput.U.mi.dwFlags = MOUSEEVENTF.LEFTUP;
+            SendInput(1, ref structInput, Marshal.SizeOf(structInput));
+        }
+
         public void ClickLeftMouse()
         {
             var x = (uint) Cursor.Position.X;
             var y = (uint) Cursor.Position.Y;
-            mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, x, y, 0, 0);
+            mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
         }
 
         public void ClickLeftMouse(int x, int y)
         {
             Cursor.Position = new Point(x, y);
-            mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, (uint)x, (uint)y, 0, 0);
+            mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
         }
 
         public void PressKey(Keys key)
@@ -1117,5 +1153,6 @@ namespace Click
             //MoveMouseSmoothToTime(x,y,  )
         }
 
+        
     }
 }
