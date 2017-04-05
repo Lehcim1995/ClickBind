@@ -114,7 +114,7 @@ namespace RuneScapeBetterClickker
             if (keyEventArgs.KeyCode != playClickRecording) return;
             if (vu.GetAlmountPoints() == 0) return;
             vu.ExecuteSeries(ref playingRecording);
-            //keyEventArgs.Handled = true;
+            keyEventArgs.Handled = true;
         }
 
         private void RecordingMouseActivity(object sender, MouseEventArgs mouseEventArgs)
